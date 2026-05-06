@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1958823：沈默的花崗岩</title>
+    <style>
+        :root { --army: #2f3517; --gold: #b89b5e; --bg: #050604; --text: #a0a0a0; --warn: #bf4040; --glow: #2a2f1a; --phosphor: #0f0; }
+        body { background: var(--bg); color: var(--text); font-family: "Courier New", Courier, "Microsoft JhengHei", monospace; margin: 0; padding: 5px; display: flex; justify-content: center; line-height: 1.4; font-size: 13px; overflow-x: hidden; }
+        .monitor { width: 100%; max-width: 880px; background: #1a1a1a; border: 4px solid #333; padding: 2px; border-radius: 5px; box-shadow: 0 0 50px rgba(0,0,0,0.9); border-style: outset; position: relative; }
+        .screen { background: #080a06; border: 2px solid #222; padding: 15px; position: relative; min-height: 420px; }
+        .screen::after { content: " "; display: block; position: absolute; top: 0; left: 0; bottom: 0; right: 0; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.3) 50%); background-size: 100% 3px; z-index: 10; pointer-events: none; opacity: 0.25; }
+        .tabs { display: flex; gap: 1px; margin-bottom: 10px; border-bottom: 1px solid var(--army); }
+        .tab { padding: 8px 15px; background: #1a1a1a; cursor: pointer; border: 1px solid var(--army); color: #555; border-bottom: none; border-radius: 3px 3px 0 0; font-weight: bold; font-size: 0.8rem; text-transform: uppercase; }
+        .tab.active { background: var(--army); color: var(--gold); box-shadow: 0 -2px 10px var(--glow); }
+        .content { display: none; }
+        .content.active { display: block; animation: monitorOn 0.3s ease-out; }
+        h2 { color: var(--gold); border-bottom: 1px solid var(--army); padding-bottom: 3px; margin-top: 0; font-size: 1.2rem; letter-spacing: 2px; }
+        .intel-log { font-style: italic; color: #7a8a6a; background: rgba(47, 53, 23, 0.1); padding: 12px; border-left: 2px solid var(--gold); margin: 12px 0; font-size: 0.9rem; border-radius: 0 3px 3px 0; line-height: 1.6; }
+        .input-area { text-align: center; margin-top: 25px; padding: 20px; border-top: 1px solid #333; background: rgba(0,0,0,0.3); }
+        input { background: #000; border: 1px solid var(--phosphor); color: var(--phosphor); padding: 10px; font-size: 2.2rem; text-align: center; width: 280px; letter-spacing: 4px; font-family: monospace; box-shadow: 0 0 10px var(--glow); text-shadow: 0 0 5px var(--phosphor); }
+        button { background: #222; color: var(--gold); border: 1px solid var(--gold); padding: 10px 30px; font-weight: bold; cursor: pointer; font-size: 0.95rem; margin-top: 15px; text-transform: uppercase; transition: 0.2s; }
+        button:hover { background: var(--gold); color: #000; box-shadow: 0 0 15px var(--gold); }
+        .timer-bar { background: #111; padding: 10px; border-top: 2px solid var(--army); display: flex; justify-content: center; align-items: center; gap: 15px; }
+        #timer-display { font-family: 'Courier New', Courier, monospace; font-size: 1.5rem; color: var(--warn); text-shadow: 0 0 10px var(--warn); font-weight: bold; }
+        #fail-overlay { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(40, 0, 0, 0.98); z-index: 100; flex-direction: column; justify-content: center; align-items: center; text-align: center; color: white; border: 4px solid var(--warn); box-sizing: border-box; }
+        .story-text { line-height: 1.8; color: #ccc; }
+        .highlight { color: var(--phosphor); font-size: 1.5rem; text-shadow: 0 0 10px var(--phosphor); }
+        @keyframes monitorOn { from { opacity: 0; transform: scaleY(0); } to { opacity: 1; transform: scaleY(1); } }
+    </style>
+</head>
+<body>
+
+<div class="monitor">
+    <div id="fail-overlay">
+        <h1 style="font-size: 3rem; color: var(--warn); margin: 0;">任務失敗</h1>
+        <p style="font-size: 1.2rem; letter-spacing: 2px; color: #ff8080;">第二波砲擊已發起。全島通訊連鎖斷裂。</p>
+        <p style="color: #ccc; margin-top: 20px;">[ 重新整理網頁以重啟通訊系統 ]</p>
+    </div>
+
+    <div id="navigationTabs" class="tabs">
+        <div class="tab active" onclick="switchPage('storyPage')">前言故事</div>
+        <div class="tab" onclick="switchPage('mapPage')">老陳的遺留文件</div>
+        <div class="tab" id="decoderTab" onclick="switchPage('decoderPage')">解密訊號終端機</div>
+    </div>
+
+    <div class="screen">
+        <div id="storyPage" class="content active">
+            <h2>前言故事</h2>
+            <div class="intel-log">
+                <strong>【 檔案編號：1958-0823 戰地觀測紀錄 】</strong><br><br>
+                1958 年 8 月 23 日 18 時 30 分，金門的天空瞬間被撕裂。數萬發砲彈如同赤紅的暴雨頃刻落下，整座島嶼在劇烈的震動中發出哀鳴。不到一小時，主要的無線電塔遭到精準打擊，通訊中斷，全島陷入了一片死寂與火海。<br><br>
+                在太武山深處的坑道裡，通訊班長老陳抹去臉上的花崗岩粉塵，看著已經斷訊的電台發出刺耳的雜訊。他知道，如果無法將關鍵的防禦數據傳回後方，這座島嶼將會徹底沈沒。在電力耗盡前，他利用僅存的光學折射器材與影子投射技術，將那串決定命運的密碼強行嵌入了這座島嶼的地景之中。<br><br>
+                「那是我們唯一的火種。」老陳在泛黃的日誌末頁寫下這句話。隨後，地層傳來更沉重的轟鳴——敵方第二波砲擊已經進入最後倒數，預計 15 分鐘後發起毀滅性打擊。<br><br>
+                <strong>⚠️ 系統警報：</strong> 目前全島正處於強烈的電磁干擾下，請在砲火覆蓋前，找回那段隱藏在光影間的沈默真相。
+            </div>
+        </div>
+
+        <div id="mapPage" class="content">
+            <h2>老陳的遺留文件</h2>
+            <div class="intel-log">
+                「通訊快撐不住了。我把最後的線索，徹底封死在影子裡。<br><br>
+                聽著，在這座島面前必須收起傲慢，只有懂得謙卑的人，才看得透那些幻象。<br><br>
+                去找到所有光束交會的終點。手放穩，慢慢轉動、校對那個相位。只要頻率一對上，真正的訊息就會從陰影裡浮現出來。」
+            </div>
+            <div style="text-align: center; border: 1px dashed var(--army); padding: 10px;">
+                <p style="font-size: 0.8rem; color: #555;">[ 偵測到加密影像數據 ]</p>
+                <img src="金門地圖.png" alt="戰地密碼圖" style="max-width: 100%; filter: sepia(0.5) contrast(1.2);">
+            </div>
+        </div>
+
+        <div id="decoderPage" class="content">
+            <h2>📟 解密訊號終端機</h2>
+            <div class="intel-log">
+                「請輸入觀測所得的六位數代碼。<br><br>
+                這組數字，曾如烙印般刻在這座島嶼慘痛的記憶裡。它是代價、是鮮血，也是這片花崗岩沈默了半個世紀的教訓。輸入它，讓歷史重新與現實同步。」
+            </div>
+            <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 3px; border: 1px solid var(--army);">
+                <div class="input-area" style="border-top: none; margin-top: 0;">
+                    <input type="text" id="passInput" maxlength="6" autocomplete="off" placeholder="------">
+                    <br>
+                    <button id="submitBtn" onclick="checkPass()">啟動代碼同步</button>
+                    <div id="finalResult" style="margin-top: 10px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="historyPage" class="content">
+            <h2>🔓 傳輸成功：歷史的見證</h2>
+            <div class="story-text">
+                <p>數據同步完成。復原代碼：<span class="highlight">474910</span></p>
+                <hr style="border: 0; border-top: 1px solid var(--army);">
+                <p><strong>【 關於 474,910 的背景故事 】</strong></p>
+                <p>這個數字並非虛構，它精確紀錄了 1958 年「八二三砲戰」期間，在短短 44 天內，投射在金門土地上的<b>砲彈總數量</b>。</p>
+                <p>當時，平均每平方公里的土地上承受了超過 3,000 發砲彈。這組數字不僅是歷史的紀錄，更是那段「沈默的花崗岩」歲月裡，無數守軍與居民堅韌意志的證明。現今，這些遺留下來的砲彈殼，許多已被鍛造成為代表和平與工藝的「金門鋼刀」。</p>
+                <p style="text-align: center; color: var(--gold); margin-top: 30px; letter-spacing: 2px;">[ 終端已鎖定：任務圓滿達成 ]</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="timer-bar">
+        <span style="color: var(--gold); font-size: 0.7rem;">INCOMING IMPACT:</span>
+        <span id="timer-display">15:00</span>
+    </div>
+</div>
+
+<script>
+    let timeLeft = 15 * 60;
+    let timerActive = true;
+    let isGameOver = false;
+
+    // 定時器邏輯
+    const timerInterval = setInterval(function() {
+        if (!timerActive || isGameOver) return;
+
+        let minutes = Math.floor(timeLeft / 60);
+        let seconds = timeLeft % 60;
+        document.getElementById('timer-display').innerText = 
+            (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
+
+        if (timeLeft <= 0) { 
+            clearInterval(timerInterval);
+            showFailOverlay();
+        }
+        timeLeft--;
+    }, 1000);
+
+    function showFailOverlay() {
+        isGameOver = true;
+        timerActive = false;
+        document.getElementById('fail-overlay').style.display = 'flex';
+        // 僅在本節中顯示失敗，不寫入 localStorage，重整即消失
+    }
+
+    function switchPage(pageId) {
+        if (isGameOver || document.getElementById('historyPage').classList.contains('active')) return;
+
+        document.querySelectorAll('.content').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.getElementById(pageId).classList.add('active');
+        
+        const tabs = document.querySelectorAll('.tab');
+        if (pageId === 'storyPage') tabs[0].classList.add('active');
+        if (pageId === 'mapPage') tabs[1].classList.add('active');
+        if (pageId === 'decoderPage') tabs[2].classList.add('active');
+    }
+
+    function checkPass() {
+        if (isGameOver) return;
+        const pass = document.getElementById('passInput').value;
+        if (pass === "474910") {
+            timerActive = false;
+            document.querySelectorAll('.content').forEach(p => p.classList.remove('active'));
+            document.getElementById('historyPage').classList.add('active');
+            
+            document.getElementById('navigationTabs').style.opacity = "0.2";
+            document.getElementById('navigationTabs').style.pointerEvents = "none";
+            document.getElementById('timer-display').style.color = "var(--phosphor)";
+            document.getElementById('timer-display').innerText = "SECURED";
+        } else {
+            const res = document.getElementById('finalResult');
+            res.style.color = "var(--warn)";
+            res.innerHTML = "⚠️ [錯誤]：同步失敗，脈衝訊號減弱。";
+        }
+    }
+</script>
+</body>
+</html>
